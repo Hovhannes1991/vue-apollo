@@ -1,26 +1,35 @@
 <template>
   <div class="movies-page">
-    <label
-      >Search Movie
-      <input type="text" v-model="search" />
-    </label>
+    <h1>Movies</h1>
+    <v-text-field label="Search Director" v-model="search" />
 
-    <ul>
-      <li v-for="movie in movies" :key="movie.id">
-        <span>{{ "name: " + movie.name }}</span>
-        <span>{{ "director: " + movie.director.name }}</span>
-      </li>
-    </ul>
-    <input type="text" v-model="movie_name" />
-    <button @click="addMovie">Add Movie</button>
+    <div class="add-director-fields">
+      <v-row>
+        <v-col cols="12" sm="6">
+          <v-text-field v-model="movie_name" />
+        </v-col>
+
+        <v-col cols="12" sm="6">
+          <v-btn @click="addMovie" variant="flat" color="secondary">
+            Add Movie
+          </v-btn>
+        </v-col>
+      </v-row>
+    </div>
+
+    <BaseTable
+      :col-names="['name', 'director name']"
+      :table-data="movies"
+      :field-names="['name', 'director.name']"
+    />
   </div>
 </template>
 
 <script>
 import gql from "graphql-tag";
+import BaseTable from "../../components/BaseTable.vue";
 export default {
   name: "MoviesPage",
-
   data() {
     return {
       search: "",
@@ -28,11 +37,9 @@ export default {
       movie_name: "",
     };
   },
-
   methods: {
     addMovie() {
       if (!this.movie_name) return;
-
       this.$apollo
         .mutate({
           mutation: gql`
@@ -72,7 +79,6 @@ export default {
         .catch((err) => console.log(err));
     },
   },
-
   apollo: {
     movies: {
       query: gql`
@@ -90,6 +96,7 @@ export default {
       },
     },
   },
+  components: { BaseTable },
 };
 </script>
 

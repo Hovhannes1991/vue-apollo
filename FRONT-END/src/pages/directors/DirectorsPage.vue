@@ -1,27 +1,35 @@
 <template>
   <div class="directors-page">
     <h1>Directors</h1>
-    <label
-      >Search Director
-      <input type="text" v-model="search" />
-    </label>
-    <ul>
-      <li v-for="director in directors" :key="director.id">
-        <span>{{ "name: " + director.name }}</span>
-        <span>{{ "age: " + director.age }}</span>
-      </li>
-    </ul>
-    <input type="text" v-model="director_name" />
-    <input type="number" v-model="director_age" />
-    <button @click="addDirector">Add Director</button>
+    <v-text-field label="Search Director" v-model="search" />
+
+    <div class="add-director-fields">
+      <v-row>
+        <v-col cols="12" sm="4">
+          <v-text-field v-model="director_name" />
+        </v-col>
+
+        <v-col cols="12" sm="4">
+          <v-text-field v-model="director_age" />
+        </v-col>
+
+        <v-col cols="12" sm="4">
+          <v-btn @click="addDirector" variant="flat" color="secondary">
+            Add Director
+          </v-btn>
+        </v-col>
+      </v-row>
+    </div>
+
+    <BaseTable :col-names="['name', 'age']" :table-data="directors" :field-names="['name', 'age']"/>
   </div>
 </template>
 
 <script>
 import gql from "graphql-tag";
+import BaseTable from "../../components/BaseTable.vue";
 export default {
   name: "DirectorsPage",
-
   data() {
     return {
       search: "",
@@ -30,7 +38,6 @@ export default {
       director_age: 0,
     };
   },
-
   apollo: {
     directors: {
       query: gql`
@@ -50,7 +57,6 @@ export default {
       },
     },
   },
-
   methods: {
     addDirector() {
       if (!this.director_name || !this.director_age) return;
@@ -69,7 +75,7 @@ export default {
           // Parameters
           variables: {
             name: this.director_name,
-            age: this.director_age,
+            age: +this.director_age,
           },
         })
         .then((data) => {
@@ -80,22 +86,18 @@ export default {
         .catch((error) => console.error(error));
     },
   },
+  components: { BaseTable },
 };
 </script>
 
 <style lang="scss" scoped>
 .directors-page {
-  ul {
-    max-height: 300px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+  h1 {
+    margin-bottom: 20px;
+  }
 
-    li {
-      display: flex;
-      flex-direction: column;
-    }
+  .add-director-fields {
+    margin: 25px auto;
   }
 }
 </style>
